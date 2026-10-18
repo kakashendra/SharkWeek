@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Цикл</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:var(--tg-theme-bg-color,#fffaf8);--tx:var(--tg-theme-text-color,#2a1a1f);--hint:var(--tg-theme-hint-color,#8a7479);--card:var(--tg-theme-secondary-bg-color,#f7ebea);--acc:var(--tg-theme-button-color,#c8406a);--on:var(--tg-theme-button-text-color,#fff)}
+*{box-sizing:border-box}
+body{margin:0;padding:16px 16px 40px;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,sans-serif}
+h2{margin:0 0 6px;font:700 24px/1.2 Georgia,serif}
+h3{margin:22px 0 8px;font-size:15px;font-weight:600}
+p{margin:6px 0}.h{color:var(--hint);font-size:14px}
+#who{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--hint);background:none;color:var(--tx);border-radius:20px;padding:6px 14px;font:inherit}
+.chip.on{background:var(--acc);color:var(--on);border-color:var(--acc)}
+#phase{background:var(--card);border-radius:16px;padding:18px;border-left:6px solid var(--acc)}
+.btns{display:flex;gap:8px;margin-top:8px}
+button.b{flex:1;border:0;border-radius:12px;padding:13px 8px;background:var(--acc);color:var(--on);font:600 15px system-ui}
+button.l{background:none;border:0;color:var(--acc);font:inherit;padding:10px 0}
+input[type=date]{width:100%;padding:11px;border-radius:12px;border:1px solid var(--hint);background:var(--bg);color:var(--tx);font:inherit}
+.row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--card)}
+.row span{color:var(--hint);padding:0 6px}
+</style>
+</head>
+<body>
+<div id="who"></div>
+<div id="phase"><p class="h">Загрузка…</p></div>
+<div id="act" style="display:none">
+  <h3>Отметить</h3>
+  <input type="date" id="d">
+  <div class="btns">
+    <button class="b" onclick="add('period')">Начались месячные</button>
+    <button class="b" onclick="add('sex')">Была близость</button>
+  </div>
+</div>
+<div id="lists"></div>
+<div id="foot"></div>
+<script>
+const API="https://ПРОЕКТ.supabase.co/functions/v1/api";   // ← подставь свой URL
+const BOT_LINK="https://t.me/ИМЯ_БОТА";                    // ← ссылка на бота (с настроенным Mini App)
+const tg=Telegram.WebApp;tg.ready();tg.expand();
+const $=id=>document.getElementById(id);
+let viewing=null,S=null;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=s=>new Date(s+"T00:00:00").toLocaleDateString("ru",{day:"numeric",month:"long"});
+$("d").value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+
+async function call(action,body={}){
+  const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({initData:tg.initData,action,...body})});
+  const j=await r.json();if(!r.ok)throw new Error(j.error||"Ошибка сети");return j;
+}
+async function load(){S=await call("get",{owner:viewing});viewing=S.owner;render();}
+function view(id){viewing=id;load();}
+async function add(kind){await call("add",{kind,date:$("d").value});tg.HapticFeedback.notificationOccurred("success");load();}
+async function del(kind,date){if(!confirm("Удалить отметку?"))return;await call("del",{kind,date});load();}
+async function invite(){
+  const {code}=await call("invite");
+  const link=`${BOT_LINK}?startapp=invite_${code}`;
+  tg.openTelegramLink("https://t.me/share/url?url="+encodeURIComponent(link)+"&text="+encodeURIComponent("Присоединяйся к моему календарю цикла"));
+}
+async function unlink(id){if(!confirm("Отключить доступ?"))return;await call("unlink",{id});viewing=null;load();}
+
+function render(){
+  const own=S.owner===S.me,p=S.phase;
+  $("who").innerHTML=S.people.length>1?S.people.map(x=>`<button class="chip ${x.id===S.owner?"on":""}" onclick="view(${x.id})">${x.id===S.me?"Мой цикл":esc(x.name)}</button>`).join(""):"";
+  $("phase").innerHTML=p
+    ?`<h2>${p.title}</h2><p class="h">День ${p.day} из ${p.cyc}</p><p>${p.advice}</p><p class="h">Следующие месячные ≈ ${fmt(p.next)}</p>`
+    :`<p>${own?"Отметь первый день месячных, и появится прогноз.":"Пока нет данных."}</p>`;
+  $("act").style.display=own?"block":"none";
+  $("lists").innerHTML=[["period","Месячные (первый день)"],["sex","Близость"]].map(([k,t])=>
+    `<h3>${t}</h3>`+(S.ev.filter(e=>e.kind==k).reverse().slice(0,15).map(e=>
+      `<div class="row">${fmt(e.date)}${own?`<span onclick="del('${k}','${e.date}')">✕</span>`:""}</div>`).join("")||'<p class="h">Пока пусто</p>')).join("");
+  $("foot").innerHTML=own?`<button class="l" onclick="invite()">Пригласить партнёра</button>`:`<button class="l" onclick="unlink(${S.owner})">Отключиться</button>`;
+}
+
+(async()=>{
+  try{
+    const sp=tg.initDataUnsafe.start_param||"";
+    if(sp.startsWith("invite_"))await call("accept",{code:sp.slice(7)});
+    await load();
+  }catch(e){document.body.innerHTML=`<p>Ошибка: ${esc(e.message)}</p><p class="h">Открой приложение из Telegram.</p>`;}
+})();
+</script>
+</body>
+</html>
