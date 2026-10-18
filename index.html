@@ -5,73 +5,137 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Цикл</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600&family=Unbounded:wght@600&display=swap">
 <style>
-:root{--bg:var(--tg-theme-bg-color,#fffaf8);--tx:var(--tg-theme-text-color,#2a1a1f);--hint:var(--tg-theme-hint-color,#8a7479);--card:var(--tg-theme-secondary-bg-color,#f7ebea);--acc:var(--tg-theme-button-color,#c8406a);--on:var(--tg-theme-button-text-color,#fff)}
-*{box-sizing:border-box}
-body{margin:0;padding:16px 16px 40px;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,sans-serif}
-h2{margin:0 0 6px;font:700 24px/1.2 Georgia,serif}
-h3{margin:22px 0 8px;font-size:15px;font-weight:600}
-p{margin:6px 0}.h{color:var(--hint);font-size:14px}
-#who{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.chip{border:1px solid var(--hint);background:none;color:var(--tx);border-radius:20px;padding:6px 14px;font:inherit}
-.chip.on{background:var(--acc);color:var(--on);border-color:var(--acc)}
-#phase{background:var(--card);border-radius:16px;padding:18px;border-left:6px solid var(--acc)}
-.btns{display:flex;gap:8px;margin-top:8px}
-button.b{flex:1;border:0;border-radius:12px;padding:13px 8px;background:var(--acc);color:var(--on);font:600 15px system-ui}
-button.l{background:none;border:0;color:var(--acc);font:inherit;padding:10px 0}
-input[type=date]{width:100%;padding:11px;border-radius:12px;border:1px solid var(--hint);background:var(--bg);color:var(--tx);font:inherit}
-.row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--card)}
-.row span{color:var(--hint);padding:0 6px}
+:root{--bg:#171219;--surf:#241c28;--tx:#f5eef2;--mut:#a395a9;--line:#372d3c;--ph:#d6336c}
+:root[data-t=light]{--bg:#fbf7f8;--surf:#fff;--tx:#2a1d2e;--mut:#85748b;--line:#eadde3}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:14px 14px calc(36px + env(safe-area-inset-bottom));background:var(--bg);color:var(--tx);font:15px/1.45 Onest,system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+#who{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
+#who:empty{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surf);border-radius:99px;padding:8px 16px}
+.chip.on{background:var(--ph);border-color:var(--ph);color:#fff}
+.card{background:var(--surf);border-radius:24px;padding:20px 18px;margin-bottom:14px}
+.hero{text-align:center}
+.hero svg{width:236px;height:236px;display:block;margin:0 auto}
+.rl{fill:var(--mut);font-size:13px}.rn{fill:var(--tx);font:600 56px Unbounded,sans-serif}
+.pt{font:600 22px Unbounded,sans-serif;color:var(--ph);margin:8px 0 6px}
+.adv{color:var(--tx);max-width:34ch;margin:0 auto 10px}
+.nx{color:var(--mut);font-size:14px}
+#act{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+#sl{grid-column:1/-1;color:var(--mut);font-size:14px;text-align:center}
+.bt{min-height:56px;border-radius:16px;border:1.5px solid var(--ph);padding:10px 12px;font-weight:600;line-height:1.2;display:flex;align-items:center;justify-content:center;text-align:center}
+#bp{background:var(--ph);color:#fff}#bs{background:transparent}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.nav b{font-weight:600;text-transform:capitalize}
+.nav button{width:40px;height:40px;border-radius:50%;border:0;background:var(--bg);font-size:20px}
+.g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.g span{text-align:center;color:var(--mut);font-size:12px;padding-bottom:4px}
+.d{position:relative;aspect-ratio:1;border:2px solid transparent;border-radius:14px;background:none;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.d b{font-weight:400;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.d u{position:absolute;bottom:1px;font-size:10px;text-decoration:none;color:#ff6b9d}
+.d.menstrual{background:rgba(214,51,108,.24)}.d.follicular{background:rgba(95,184,138,.20)}
+.d.ovulation{background:rgba(242,181,68,.26)}.d.luteal{background:rgba(139,123,216,.22)}
+.d.p b{background:#d6336c;color:#fff;font-weight:600}
+.d.n{border-style:dashed;border-color:#d6336c}
+.d.t b{box-shadow:0 0 0 2px var(--tx)}
+.d.s{border-color:var(--tx);border-style:solid}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;color:var(--mut);font-size:13px}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+#foot{text-align:center}
+.l{background:none;border:0;color:var(--mut);padding:12px;text-decoration:underline}
 </style>
 </head>
 <body>
 <div id="who"></div>
-<div id="phase"><p class="h">Загрузка…</p></div>
-<div id="act" style="display:none">
-  <h3>Отметить</h3>
-  <input type="date" id="d">
-  <div class="btns">
-    <button class="b" onclick="add('period')">Начались месячные</button>
-    <button class="b" onclick="add('sex')">Была близость</button>
-  </div>
+<div class="card hero" id="hero"></div>
+<div id="act">
+  <div id="sl"></div>
+  <button class="bt" id="bp" onclick="tog('period')"></button>
+  <button class="bt" id="bs" onclick="tog('sex')"></button>
 </div>
-<div id="lists"></div>
+<div class="card">
+  <div class="nav"><button onclick="mv(-1)">‹</button><b id="mt"></b><button onclick="mv(1)">›</button></div>
+  <div class="g" id="wk"></div>
+  <div class="g" id="cal"></div>
+  <div class="lg" id="lg"></div>
+</div>
 <div id="foot"></div>
 <script>
-const API="https://qyzbjvvsdpuyyflcomjb.supabase.co/functions/v1/api";   // ← подставь свой URL
-const BOT_LINK="https://t.me/shark_week_bot/SharkWeek";                    // ← ссылка на бота (с настроенным Mini App)
+const API="https://qyzbjvvsdpuyyflcomjb.supabase.co/functions/v1/api";
+const BOT_LINK="https://t.me/shark_week_bot/SharkWeek";
 const tg=Telegram.WebApp;tg.ready();tg.expand();
+document.documentElement.dataset.t=tg.colorScheme==="light"?"light":"dark";
 const $=id=>document.getElementById(id);
-let viewing=null,S=null;
+const PH={menstrual:{c:"#d6336c",n:"Менструация"},follicular:{c:"#5fb88a",n:"Фолликулярная"},ovulation:{c:"#f2b544",n:"Овуляция"},luteal:{c:"#8b7bd8",n:"Лютеиновая"}};
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const D=s=>new Date(s+"T00:00:00"),diff=(a,b)=>Math.round((D(a)-D(b))/864e5);
+const fmt=s=>D(s).toLocaleDateString("ru",{day:"numeric",month:"long"});
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmt=s=>new Date(s+"T00:00:00").toLocaleDateString("ru",{day:"numeric",month:"long"});
-$("d").value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const today=iso(new Date());let viewing=null,S=null,sel=today,cur=null;
 
 async function call(action,body={}){
   const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({initData:tg.initData,action,...body})});
   const j=await r.json();if(!r.ok)throw new Error(j.error||"Ошибка сети");return j;
 }
-async function load(){S=await call("get",{owner:viewing});viewing=S.owner;render();}
+async function load(){S=await call("get",{owner:viewing});viewing=S.owner;if(!cur)cur=D(today.slice(0,8)+"01");render();}
+const has=(k,s)=>S.ev.some(e=>e.kind==k&&e.date==s);
+async function tog(k){await call(has(k,sel)?"del":"add",{kind:k,date:sel});tg.HapticFeedback.notificationOccurred("success");load();}
+function pick(s){sel=s;render();}
+function mv(n){cur=new Date(cur.getFullYear(),cur.getMonth()+n,1);render();}
 function view(id){viewing=id;load();}
-async function add(kind){await call("add",{kind,date:$("d").value});tg.HapticFeedback.notificationOccurred("success");load();}
-async function del(kind,date){if(!confirm("Удалить отметку?"))return;await call("del",{kind,date});load();}
 async function invite(){
   const {code}=await call("invite");
-  const link=`${BOT_LINK}?startapp=invite_${code}`;
-  tg.openTelegramLink("https://t.me/share/url?url="+encodeURIComponent(link)+"&text="+encodeURIComponent("Присоединяйся к моему календарю цикла"));
+  tg.openTelegramLink("https://t.me/share/url?url="+encodeURIComponent(`${BOT_LINK}?startapp=invite_${code}`)+"&text="+encodeURIComponent("Присоединяйся к моему календарю цикла"));
 }
 async function unlink(id){if(!confirm("Отключить доступ?"))return;await call("unlink",{id});viewing=null;load();}
 
+function phaseOf(s){
+  const st=S.ev.filter(e=>e.kind=="period").map(e=>e.date).sort(),cyc=S.phase&&S.phase.cyc;
+  if(!st.length||!cyc)return null;
+  let last=null;for(const x of st)if(x<=s)last=x;
+  if(!last)return null;
+  const n=diff(s,last),isLast=last===st[st.length-1];
+  if(!isLast&&n>=45)return null;
+  const dd=isLast?n%cyc+1:n+1,ov=cyc-14;
+  return dd<=5?"menstrual":dd<ov-1?"follicular":dd<=ov+1?"ovulation":"luteal";
+}
+
+function ring(){
+  const p=S.phase,C=2*Math.PI*90;let a="",mk="",c1="—",c2="";
+  if(p){
+    const cyc=p.cyc,ov=cyc-14,segs=[["menstrual",5],["follicular",Math.max(ov-7,1)],["ovulation",3],["luteal",cyc-ov-1]];let st=0;
+    for(const [k,n] of segs){
+      a+=`<circle cx="110" cy="110" r="90" fill="none" stroke="${PH[k].c}" stroke-width="16" stroke-dasharray="${n/cyc*C-3} ${C}" stroke-dashoffset="${-(st/cyc*C)-1.5}" transform="rotate(-90 110 110)" opacity="${k==p.key?1:.4}"/>`;st+=n;
+    }
+    const ang=(p.day-.5)/cyc*2*Math.PI-Math.PI/2;
+    mk=`<circle cx="${110+90*Math.cos(ang)}" cy="${110+90*Math.sin(ang)}" r="11" fill="var(--surf)" stroke="${PH[p.key].c}" stroke-width="5"/>`;
+    c1=p.day;c2=`из ${cyc}`;
+  }else a=`<circle cx="110" cy="110" r="90" fill="none" stroke="var(--line)" stroke-width="16"/>`;
+  return `<svg viewBox="0 0 220 220">${a}${mk}<text x="110" y="82" text-anchor="middle" class="rl">день цикла</text><text x="110" y="136" text-anchor="middle" class="rn">${c1}</text><text x="110" y="160" text-anchor="middle" class="rl">${c2}</text></svg>`;
+}
+
 function render(){
   const own=S.owner===S.me,p=S.phase;
+  document.documentElement.style.setProperty("--ph",p?PH[p.key].c:"#d6336c");
   $("who").innerHTML=S.people.length>1?S.people.map(x=>`<button class="chip ${x.id===S.owner?"on":""}" onclick="view(${x.id})">${x.id===S.me?"Мой цикл":esc(x.name)}</button>`).join(""):"";
-  $("phase").innerHTML=p
-    ?`<h2>${p.title}</h2><p class="h">День ${p.day} из ${p.cyc}</p><p>${p.advice}</p><p class="h">Следующие месячные ≈ ${fmt(p.next)}</p>`
-    :`<p>${own?"Отметь первый день месячных, и появится прогноз.":"Пока нет данных."}</p>`;
-  $("act").style.display=own?"block":"none";
-  $("lists").innerHTML=[["period","Месячные (первый день)"],["sex","Близость"]].map(([k,t])=>
-    `<h3>${t}</h3>`+(S.ev.filter(e=>e.kind==k).reverse().slice(0,15).map(e=>
-      `<div class="row">${fmt(e.date)}${own?`<span onclick="del('${k}','${e.date}')">✕</span>`:""}</div>`).join("")||'<p class="h">Пока пусто</p>')).join("");
+  let txt;
+  if(p){const left=diff(p.next,today);txt=`<div class="pt">${PH[p.key].n}</div><p class="adv">${p.advice}</p><div class="nx">Следующие месячные ${left>0?`через ${left} дн.`:"скоро"} · ${fmt(p.next)}</div>`;}
+  else txt=`<div class="pt">Пока нет данных</div><p class="adv">${own?"Выбери в календаре первый день последних месячных и нажми «Начались месячные».":"Данные ещё не добавлены."}</p>`;
+  $("hero").innerHTML=ring()+txt;
+  $("act").style.display=own?"grid":"none";
+  if(own){$("sl").textContent=fmt(sel);$("bp").textContent=has("period",sel)?"Снять отметку месячных":"Начались месячные";$("bs").textContent=has("sex",sel)?"Снять отметку близости":"Была близость";}
+  $("mt").textContent=cur.toLocaleDateString("ru",{month:"long",year:"numeric"});
+  $("wk").innerHTML=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(x=>`<span>${x}</span>`).join("");
+  const y=cur.getFullYear(),m=cur.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,dim=new Date(y,m+1,0).getDate();
+  let h="<i></i>".repeat(off);
+  for(let d=1;d<=dim;d++){
+    const s=iso(new Date(y,m,d)),ph=phaseOf(s);
+    h+=`<button class="d ${ph||""} ${s==today?"t":""} ${s==sel&&own?"s":""} ${has("period",s)?"p":""} ${p&&s==p.next?"n":""}" onclick="pick('${s}')"><b>${d}</b>${has("sex",s)?"<u>♥</u>":""}</button>`;
+  }
+  $("cal").innerHTML=h;
+  $("lg").innerHTML=Object.values(PH).map(v=>`<span><i style="background:${v.c}"></i>${v.n}</span>`).join("")+`<span><i style="background:#ff6b9d"></i>♥ близость</span>`;
   $("foot").innerHTML=own?`<button class="l" onclick="invite()">Пригласить партнёра</button>`:`<button class="l" onclick="unlink(${S.owner})">Отключиться</button>`;
 }
 
@@ -80,7 +144,7 @@ function render(){
     const sp=tg.initDataUnsafe.start_param||"";
     if(sp.startsWith("invite_"))await call("accept",{code:sp.slice(7)});
     await load();
-  }catch(e){document.body.innerHTML=`<p>Ошибка: ${esc(e.message)}</p><p class="h">Открой приложение из Telegram.</p>`;}
+  }catch(e){document.body.innerHTML=`<p>Ошибка: ${esc(e.message)}</p><p>Открой приложение из Telegram.</p>`;}
 })();
 </script>
 </body>
